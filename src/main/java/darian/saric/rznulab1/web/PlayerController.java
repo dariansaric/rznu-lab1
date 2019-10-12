@@ -4,6 +4,7 @@ import darian.saric.rznulab1.model.Player;
 import darian.saric.rznulab1.model.PlayerRepository;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.Resources;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +22,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 @RestController
 @RequestMapping("/players")
 public class PlayerController {
+    //todo: nezavisan unos igrača i ekipa
     private final PlayerRepository repository;
     private final PlayerResourceAssembler assembler;
 
@@ -31,7 +33,6 @@ public class PlayerController {
     }
 
     @GetMapping()
-        //todo: popraviti
     Resources<Resource<Player>> all() {
         List<Resource<Player>> players = repository.findAll().stream()
                 .map(assembler::toResource)
@@ -45,8 +46,13 @@ public class PlayerController {
     ResponseEntity<?> createPlayer(@RequestBody Player newPlayer) throws URISyntaxException {
         Resource<Player> player = assembler.toResource(repository.save(newPlayer));
 
-        return ResponseEntity.created(new URI(player.getId().expand().getHref()))
-                .body(player);
+        if (player.getContent() != null) {
+            return ResponseEntity.created(
+                    new URI(linkTo(Player.class).slash(player.getContent().getId()).withSelfRel().getHref()))
+                    .body(player);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
     }
 
 
@@ -61,7 +67,30 @@ public class PlayerController {
 
     @PostMapping("/{id}")
     ResponseEntity<?> updatePlayer(@RequestBody Player player, @PathVariable Long id, HttpServletRequest request) {
-        return null;
+        Resource<Player> playerEntityModel = repository.findById(id)
+                .map(p -> {
+                    p.setName(player.getName());
+                    p.setAge(player.getAge());
+                    p.setCollege(player.getCollege());
+                    p.setPosition(player.getPosition());
+                    p.setTeam(player.getTeam());
+                    return assembler.toResource(repository.save(p));
+                })
+                .orElseGet(() -> {
+                    //todo: sto napraviti ovdje
+                    return null;
+                });
+
+        return ResponseEntity.accepted()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(playerEntityModel);
+    }
+
+    @DeleteMapping("/{id}")
+    ResponseEntity<?> delete(@PathVariable Long id) {
+        repository.deleteById(id);
+
+        return ResponseEntity.noContent().build();
     }
 
 
