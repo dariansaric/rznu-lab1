@@ -13,19 +13,20 @@ import java.util.List;
 
 @Slf4j
 public class PrepopulateDB {
+    private static final List<Player> players = Arrays.asList(
+            new Player("Tom Brady", Position.QB, 42, "Michigan", new Team("New England Patriots", 6, 1969)),
+            new Player("Patrick Mahomes", Position.QB, 23, "Texas", new Team("Kansas City Chiefs", 0, 1950)));
     private static final List<Team> teams = Arrays.asList(
 //            new Team("New England Patriots", 6, 1969),
 //            new Team("Kansas City Chiefs", 0, 1950),
             new Team("Pittburgh Steelers", 7, 1933));
-    private static final List<Player> players = Arrays.asList(
-            new Player("Tom Brady", Position.QB, 42, "Michigan", new Team("New England Patriots", 6, 1969)),
-            new Player("Patrick Mahomes", Position.QB, 23, "Texas", new Team("Kansas City Chiefs", 0, 1950)));
+
 
     @Bean
     CommandLineRunner initDatabase(PlayerRepository playerRepository, TeamRepository teamRepository) {
         return args -> {
-            log.info("Preloading teams " + teamRepository.saveAll(teams));
             log.info("Preloading players " + playerRepository.saveAll(players));
+            log.info("Preloading teams " + teamRepository.saveAll(teams));
         };
     }
 }

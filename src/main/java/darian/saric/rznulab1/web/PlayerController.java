@@ -2,7 +2,6 @@ package darian.saric.rznulab1.web;
 
 import darian.saric.rznulab1.model.Player;
 import darian.saric.rznulab1.model.PlayerRepository;
-import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.Resources;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -22,19 +21,18 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 @RestController
 @RequestMapping("/players")
 public class PlayerController {
-    //todo: nezavisan unos igrača i ekipa
     private final PlayerRepository repository;
     private final PlayerResourceAssembler assembler;
 
 
-    public PlayerController(PlayerRepository repository, PlayerResourceAssembler assembler) {
+    PlayerController(PlayerRepository repository, PlayerResourceAssembler assembler) {
         this.repository = repository;
         this.assembler = assembler;
     }
 
     @GetMapping()
-    Resources<Resource<Player>> all() {
-        List<Resource<Player>> players = repository.findAll().stream()
+    Resources<PlayerResource> all() {
+        List<PlayerResource> players = repository.findAll().stream()
                 .map(assembler::toResource)
                 .collect(Collectors.toList());
 
@@ -44,11 +42,12 @@ public class PlayerController {
 
     @PostMapping("/new")
     ResponseEntity<?> createPlayer(@RequestBody Player newPlayer) throws URISyntaxException {
-        Resource<Player> player = assembler.toResource(repository.save(newPlayer));
+        Player pojoPlayer = repository.save(newPlayer); // newly created player as POJO
+        PlayerResource player = assembler.toResource(pojoPlayer);
 
-        if (player.getContent() != null) {
+        if (player != null) {
             return ResponseEntity.created(
-                    new URI(linkTo(Player.class).slash(player.getContent().getId()).withSelfRel().getHref()))
+                    new URI(linkTo(Player.class).slash(pojoPlayer.getId()).withSelfRel().getHref()))
                     .body(player);
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -67,7 +66,7 @@ public class PlayerController {
 
     @PostMapping("/{id}")
     ResponseEntity<?> updatePlayer(@RequestBody Player player, @PathVariable Long id, HttpServletRequest request) {
-        Resource<Player> playerEntityModel = repository.findById(id)
+        PlayerResource playerEntityModel = repository.findById(id)
                 .map(p -> {
                     p.setName(player.getName());
                     p.setAge(player.getAge());

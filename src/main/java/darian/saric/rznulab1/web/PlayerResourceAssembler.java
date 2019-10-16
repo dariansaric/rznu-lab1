@@ -1,20 +1,31 @@
 package darian.saric.rznulab1.web;
 
 import darian.saric.rznulab1.model.Player;
-import org.springframework.hateoas.Resource;
-import org.springframework.hateoas.ResourceAssembler;
+import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
 import org.springframework.stereotype.Component;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 @Component
-public class PlayerResourceAssembler implements ResourceAssembler<Player, Resource<Player>> {
+public class PlayerResourceAssembler extends ResourceAssemblerSupport<Player, PlayerResource> {
+
+    public PlayerResourceAssembler() {
+        super(PlayerController.class, PlayerResource.class);
+    }
+
     @Override
-    public Resource<Player> toResource(Player player) {
-        return new Resource<>(player,
-                linkTo(methodOn(PlayerController.class).one(player.getId())).withSelfRel(),
-                linkTo(methodOn(PlayerController.class).all()).withRel("players")
-        );
+    public PlayerResource toResource(Player player) {
+        PlayerResource playerResource = super.createResourceWithId(player.getId(), player);
+        playerResource.setName(player.getName());
+        playerResource.setAge(player.getAge());
+        playerResource.setCollege(player.getCollege());
+        playerResource.setPosition(player.getPosition());
+        playerResource.setTeam(player.getTeam().getName());
+//        playerResource.setSelf(linkTo(methodOn(PlayerController.class).one(player.getId())).withSelfRel());
+//        playerResource.setAll(linkTo(methodOn(PlayerController.class).all()).withRel("players"));
+        playerResource.add(linkTo(methodOn(PlayerController.class).all()).withRel("players"));
+
+        return playerResource;
     }
 }

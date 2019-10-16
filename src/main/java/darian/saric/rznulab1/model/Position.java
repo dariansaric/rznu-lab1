@@ -1,7 +1,6 @@
 package darian.saric.rznulab1.model;
 
 public enum Position {
-    // todo: preimenovati
     QB("QB"),
     RB("RB"),
     WR("WR"),

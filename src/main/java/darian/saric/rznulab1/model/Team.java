@@ -3,21 +3,24 @@ package darian.saric.rznulab1.model;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.util.Set;
+import java.util.List;
 
 @Data
-@Entity
+@Entity(name = "team")
 public class Team {
     //todo: reprezentacija kluba bez popisivanja igrača, ili?
     @Id
     @GeneratedValue
     @Column(name = "t_id")
     private Long id;
+    @Column(name = "name")
     private String name;
+    @Column(name = "superBowlsWon")
     private int superBowlsWon;
+    @Column(name = "yearFound")
     private int yearFound;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "team", fetch = FetchType.EAGER)
-    private Set<Player> players;
+    private List<Player> players;
 
     public Team() {
 
