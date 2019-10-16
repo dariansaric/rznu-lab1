@@ -24,20 +24,21 @@ public class PlayerController {
     private final PlayerRepository repository;
     private final PlayerResourceAssembler assembler;
 
-
     PlayerController(PlayerRepository repository, PlayerResourceAssembler assembler) {
         this.repository = repository;
         this.assembler = assembler;
     }
 
     @GetMapping()
-    Resources<PlayerResource> all() {
+    ResponseEntity<?> all() {
         List<PlayerResource> players = repository.findAll().stream()
                 .map(assembler::toResource)
                 .collect(Collectors.toList());
 
-        return new Resources<>(players,
-                linkTo(methodOn(PlayerController.class).all()).withSelfRel());
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new Resources<>(players,
+                        linkTo(methodOn(PlayerController.class).all()).withSelfRel()));
     }
 
     @PostMapping("/new")
@@ -53,7 +54,6 @@ public class PlayerController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
-
 
     @GetMapping("/{id}")
     ResponseEntity<?> one(@PathVariable Long id) {
@@ -91,6 +91,4 @@ public class PlayerController {
 
         return ResponseEntity.noContent().build();
     }
-
-
 }
