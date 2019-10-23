@@ -1,8 +1,9 @@
-package darian.saric.rznulab1.web;
+package darian.saric.rznulab1.web.player;
 
 import darian.saric.rznulab1.model.Player;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.ResourceAssembler;
+import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.springframework.stereotype.Component;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
@@ -14,7 +15,7 @@ public class PlayerAssembler implements ResourceAssembler<Player, Resource<Playe
     @Override
     public Resource<Player> toResource(Player player) {
         return new Resource<>(player,
-                linkTo(methodOn(PlayerController.class).one(player.getId())).withSelfRel(),
+                ControllerLinkBuilder.linkTo(methodOn(PlayerController.class).one(player.getId())).withSelfRel(),
                 linkTo(methodOn(PlayerController.class).all()).withRel("players")
         );
     }

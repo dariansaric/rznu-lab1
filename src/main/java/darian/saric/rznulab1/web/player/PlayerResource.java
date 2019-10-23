@@ -1,8 +1,7 @@
-package darian.saric.rznulab1.web;
+package darian.saric.rznulab1.web.player;
 
 import darian.saric.rznulab1.model.Position;
 import lombok.Data;
-import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceSupport;
 import org.springframework.stereotype.Component;
 
@@ -14,8 +13,5 @@ public class PlayerResource extends ResourceSupport {
     private int age;
     private String college;
     private String team;
-    //    private Link self;
-    private Link all;
-
 
 }

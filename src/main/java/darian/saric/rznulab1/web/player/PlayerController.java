@@ -1,4 +1,4 @@
-package darian.saric.rznulab1.web;
+package darian.saric.rznulab1.web.player;
 
 import darian.saric.rznulab1.model.Player;
 import darian.saric.rznulab1.model.PlayerRepository;
@@ -21,6 +21,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 @RestController
 @RequestMapping("/players")
 public class PlayerController {
+    //todo dodavanje igraca uz (ne)postojece klubove
     private final PlayerRepository repository;
     private final PlayerResourceAssembler assembler;
 

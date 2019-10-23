@@ -8,7 +8,6 @@ import java.util.List;
 @Data
 @Entity(name = "team")
 public class Team {
-    //todo: reprezentacija kluba bez popisivanja igrača, ili?
     @Id
     @GeneratedValue
     @Column(name = "t_id")

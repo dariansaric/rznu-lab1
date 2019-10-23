@@ -1,4 +1,4 @@
-package darian.saric.rznulab1.web;
+package darian.saric.rznulab1.web.player;
 
 import darian.saric.rznulab1.model.Player;
 import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
@@ -22,8 +22,6 @@ public class PlayerResourceAssembler extends ResourceAssemblerSupport<Player, Pl
         playerResource.setCollege(player.getCollege());
         playerResource.setPosition(player.getPosition());
         playerResource.setTeam(player.getTeam().getName());
-//        playerResource.setSelf(linkTo(methodOn(PlayerController.class).one(player.getId())).withSelfRel());
-//        playerResource.setAll(linkTo(methodOn(PlayerController.class).all()).withRel("players"));
         playerResource.add(linkTo(methodOn(PlayerController.class).all()).withRel("players"));
 
         return playerResource;
