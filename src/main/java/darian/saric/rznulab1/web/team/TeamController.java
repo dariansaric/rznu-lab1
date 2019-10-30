@@ -1,12 +1,17 @@
 package darian.saric.rznulab1.web.team;
 
+import com.google.gson.Gson;
 import darian.saric.rznulab1.model.Team;
 import darian.saric.rznulab1.model.TeamRepository;
 import org.springframework.hateoas.Resources;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -17,7 +22,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 @RestController
 @RequestMapping("/teams")
 public class TeamController {
-    //todo put, post, delete
+    private static final Gson GSON = new Gson();
     private final TeamRepository repository;
     private final TeamAssemblerNoPlayers noPlayersAssembler;
     private final TeamAssemblerPlayers playersAssembler;
@@ -57,5 +62,47 @@ public class TeamController {
                 ResponseEntity.notFound().build();
     }
 
+    @PutMapping(value = "/new", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> createTeam(@RequestBody String newTeam) throws URISyntaxException {
+        Team team = GSON.fromJson(newTeam, Team.class);
+        Team pojoTeam = repository.save(team);
+        TeamResourceNoPlayers teamResource = noPlayersAssembler.toResource(pojoTeam);
+
+        return teamResource != null ?
+                ResponseEntity.created(
+                        new URI(linkTo(
+                                methodOn(TeamController.class)
+                                        .one(pojoTeam.getId(), false))
+                                .withSelfRel().getHref()))
+//                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(teamResource)
+                :
+                ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+
+    @PostMapping("/{id}")
+    ResponseEntity<?> updateTeam(@RequestBody Team team, @PathVariable Long id, HttpServletRequest request) {
+        TeamResourceNoPlayers teamResource = repository.findById(id)
+                .map(t -> {
+                    t.setName(team.getName());
+                    t.setSuperBowlsWon(team.getSuperBowlsWon());
+                    t.setYearFound(team.getYearFound());
+                    return noPlayersAssembler.toResource(repository.save(t));
+                }).orElseGet(() -> {
+                    // todo dalje
+                    return null;
+                });
+
+        return ResponseEntity.accepted()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(teamResource);
+    }
+
+    @DeleteMapping("/{id}")
+    ResponseEntity<?> delete(@PathVariable Long id) {
+        repository.deleteById(id);
+
+        return ResponseEntity.noContent().build();
+    }
 
 }

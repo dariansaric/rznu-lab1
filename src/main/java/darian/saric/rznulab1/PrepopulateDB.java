@@ -1,5 +1,6 @@
 package darian.saric.rznulab1;
 
+import com.google.gson.Gson;
 import darian.saric.rznulab1.model.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
@@ -27,6 +28,8 @@ public class PrepopulateDB {
         return args -> {
             log.info("Preloading players " + playerRepository.saveAll(players));
             log.info("Preloading teams " + teamRepository.saveAll(teams));
+            String s = new Gson().toJson(teamRepository.findAll().get(0));
+            log.info(s);
         };
     }
 }

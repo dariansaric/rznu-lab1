@@ -7,9 +7,10 @@ import java.util.List;
 
 @Data
 @Entity(name = "team")
+//@Value
 public class Team {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "t_id")
     private Long id;
     @Column(name = "name")
@@ -19,7 +20,11 @@ public class Team {
     @Column(name = "yearFound")
     private int yearFound;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "team", fetch = FetchType.EAGER)
-    private List<Player> players;
+//    @JsonIgnore
+//    @ToString.Exclude
+//    @EqualsAndHashCode.Exclude
+
+    private transient List<Player> players;
 
     public Team() {
 
