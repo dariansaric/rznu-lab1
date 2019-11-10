@@ -29,6 +29,7 @@ public class TeamAssemblerPlayers extends ResourceAssemblerSupport<Team, TeamRes
                         .stream()
                         .map(playerAssembler::toResource)
                         .collect(Collectors.toList()));
+//        teamResourcePlayers.add();
         teamResourcePlayers.setAll(linkTo(methodOn(TeamController.class).all(true)).withRel("teams"));
         teamResourcePlayers.setLinkNoPlayers(linkTo(methodOn(TeamController.class).all(false)).withRel("teams"));
         return teamResourcePlayers;

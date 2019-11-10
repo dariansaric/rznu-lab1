@@ -1,6 +1,8 @@
 package darian.saric.rznulab1.model;
 
 import lombok.Data;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 
@@ -8,15 +10,16 @@ import javax.persistence.*;
 @Entity
 public class Player {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "p_id")
     private Long id;
     private String name;
     private Position position;
     private int age;
     private String college;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne()
     @JoinColumn(name = "t_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Team team;
 
     public Player() {

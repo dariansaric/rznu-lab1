@@ -22,6 +22,7 @@ public class PlayerResourceAssembler extends ResourceAssemblerSupport<Player, Pl
         playerResource.setCollege(player.getCollege());
         playerResource.setPosition(player.getPosition());
         playerResource.setTeam(player.getTeam().getName());
+//        playerResource.add(linkTo(methodOn(PlayerController.class).one(player.getId())).withSelfRel());
         playerResource.add(linkTo(methodOn(PlayerController.class).all()).withRel("players"));
 
         return playerResource;

@@ -1,5 +1,6 @@
 package darian.saric.rznulab1.web.player;
 
+import com.google.gson.Gson;
 import darian.saric.rznulab1.model.Player;
 import darian.saric.rznulab1.model.PlayerRepository;
 import org.springframework.hateoas.Resources;
@@ -8,7 +9,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -21,7 +21,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 @RestController
 @RequestMapping("/players")
 public class PlayerController {
-    //todo dodavanje igraca uz (ne)postojece klubove
+    private static final Gson GSON = new Gson();
     private final PlayerRepository repository;
     private final PlayerResourceAssembler assembler;
 
@@ -30,7 +30,7 @@ public class PlayerController {
         this.assembler = assembler;
     }
 
-    @GetMapping()
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<?> all() {
         List<PlayerResource> players = repository.findAll().stream()
                 .map(assembler::toResource)
@@ -42,18 +42,19 @@ public class PlayerController {
                         linkTo(methodOn(PlayerController.class).all()).withSelfRel()));
     }
 
-    @PostMapping("/new")
-    ResponseEntity<?> createPlayer(@RequestBody Player newPlayer) throws URISyntaxException {
-        Player pojoPlayer = repository.save(newPlayer); // newly created player as POJO
+    @PostMapping(value = "/new", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> createPlayer(@RequestBody String newPlayer) throws URISyntaxException {
+        Player p = GSON.fromJson(newPlayer, Player.class);
+        Player pojoPlayer = repository.save(p); // newly created player as POJO
         PlayerResource player = assembler.toResource(pojoPlayer);
 
-        if (player != null) {
-            return ResponseEntity.created(
-                    new URI(linkTo(Player.class).slash(pojoPlayer.getId()).withSelfRel().getHref()))
-                    .body(player);
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+        return player != null ?
+                ResponseEntity.created(
+                        new URI(linkTo(Player.class)
+                                .slash(pojoPlayer.getId())
+                                .withSelfRel().getHref()))
+                        .body(player)
+                : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
     @GetMapping("/{id}")
@@ -65,9 +66,9 @@ public class PlayerController {
                 ResponseEntity.notFound().build();
     }
 
-    @PostMapping("/{id}")
-    ResponseEntity<?> updatePlayer(@RequestBody Player player, @PathVariable Long id, HttpServletRequest request) {
-        PlayerResource playerEntityModel = repository.findById(id)
+    @PostMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> updatePlayer(@RequestBody Player player, @PathVariable Long id) {
+        PlayerResource playerResource = repository.findById(id)
                 .map(p -> {
                     p.setName(player.getName());
                     p.setAge(player.getAge());
@@ -77,13 +78,14 @@ public class PlayerController {
                     return assembler.toResource(repository.save(p));
                 })
                 .orElseGet(() -> {
-                    //todo: sto napraviti ovdje
                     return null;
                 });
 
-        return ResponseEntity.accepted()
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(playerEntityModel);
+        return playerResource != null ?
+                ResponseEntity.accepted()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(player) :
+                ResponseEntity.badRequest().build();
     }
 
     @DeleteMapping("/{id}")

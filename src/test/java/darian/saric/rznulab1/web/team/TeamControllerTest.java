@@ -14,8 +14,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -48,9 +47,10 @@ public class TeamControllerTest {
 
         mvc.perform(
                 get("/teams/" + id)
-                        .accept(MediaType.APPLICATION_JSON))
+                        .accept(MediaType.APPLICATION_JSON_VALUE)
+        )
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(content().json(GSON.toJson(t)));
     }
 
@@ -60,7 +60,7 @@ public class TeamControllerTest {
 
         mvc.perform(
                 put("/teams/new")
-                        .contentType(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(GSON.toJson(t)))
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -68,10 +68,28 @@ public class TeamControllerTest {
     }
 
     @Test
-    public void updateTeam() {
+    public void updateTeam() throws Exception {
+        Team t = repository.findAll().get(0);
+        t.setSuperBowlsWon(10);
+        Team t1 = new Team(t.getName(), t.getSuperBowlsWon(), t.getYearFound());
+
+        mvc.perform(post("/teams/" + t.getId())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .content(GSON.toJson(t)))
+                .andExpect(status().isAccepted())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(content().json(GSON.toJson(t1)));
     }
 
     @Test
-    public void delete() {
+    public void deleteTeam() throws Exception {
+        Long id = repository.findAll().get(0).getId();
+
+        mvc.perform(delete("/teams/" + id)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+        )
+                .andExpect(status().isAccepted());
     }
 }

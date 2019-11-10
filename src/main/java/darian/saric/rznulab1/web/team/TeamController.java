@@ -9,7 +9,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -80,8 +79,8 @@ public class TeamController {
                 ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
-    @PostMapping("/{id}")
-    ResponseEntity<?> updateTeam(@RequestBody Team team, @PathVariable Long id, HttpServletRequest request) {
+    @PostMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> updateTeam(@RequestBody Team team, @PathVariable Long id) {
         TeamResourceNoPlayers teamResource = repository.findById(id)
                 .map(t -> {
                     t.setName(team.getName());
@@ -93,16 +92,23 @@ public class TeamController {
                     return null;
                 });
 
-        return ResponseEntity.accepted()
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(teamResource);
+        // privremeno rješenje
+        return teamResource != null ?
+                ResponseEntity.accepted()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(teamResource)
+                :
+                ResponseEntity.badRequest().build();
+//        return ResponseEntity.accepted()
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .body(teamResource);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping(value = "/{id}")
     ResponseEntity<?> delete(@PathVariable Long id) {
         repository.deleteById(id);
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.accepted().build();
     }
 
 }
