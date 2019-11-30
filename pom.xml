@@ -46,33 +46,11 @@
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
-        <!--        TODO: autentifikacija-->
-        <!--        <dependency>-->
-        <!--            <groupId>org.springframework.session</groupId>-->
-        <!--            <artifactId>spring-session-</artifactId>-->
-        <!--        </dependency>-->
-        <!--        <dependency>-->
-        <!--            <groupId>org.springframework.session</groupId>-->
-        <!--            <artifactId>spring-session-bom</artifactId>-->
-        <!--            <version>Bean-SR8</version>-->
-        <!--            <type>pom</type>-->
-        <!--            <scope>import</scope>-->
-        <!--        </dependency>-->
-        <!--        <dependency>-->
-        <!--            <groupId>org.springframework.session</groupId>-->
-        <!--            <artifactId>spring-session-data-redis</artifactId>-->
-        <!--        </dependency>-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-        <!--        <dependency>-->
-        <!--            <groupId>org.springframework.security</groupId>-->
-        <!--            <artifactId>spring-security-test</artifactId>-->
-        <!--            <scope>test</scope>-->
-        <!--        </dependency>-->
-
         <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
         <dependency>
             <groupId>com.google.code.gson</groupId>

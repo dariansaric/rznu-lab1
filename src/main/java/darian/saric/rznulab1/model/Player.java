@@ -7,7 +7,7 @@ import org.hibernate.annotations.OnDeleteAction;
 import javax.persistence.*;
 
 @Data
-@Entity
+@Entity(name = "player")
 public class Player {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
