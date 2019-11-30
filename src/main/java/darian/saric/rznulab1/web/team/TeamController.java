@@ -26,7 +26,6 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 public class TeamController {
     private static final Gson GSON = new Gson();
     private final TeamRepository repository;
-    //    @Autowired
     private final PlayerRepository playerRepository;
     private final TeamAssemblerNoPlayers teamAssemblerNoPlayers;
     private final TeamAssemblerPlayers teamAssemblerPlayers;
@@ -75,7 +74,7 @@ public class TeamController {
                         linkTo(methodOn(TeamController.class).all(includeRoster)).withSelfRel()));
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<?> one(@PathVariable Long id, @RequestParam(value = "roster", required = false) boolean includeRoster) {
         Optional<Team> t = repository.findById(id);
 
@@ -100,7 +99,7 @@ public class TeamController {
                                 methodOn(TeamController.class)
                                         .one(pojoTeam.getId(), false))
                                 .withSelfRel().getHref()))
-//                        .contentType(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
                         .body(teamResource)
                 :
                 ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -135,7 +134,7 @@ public class TeamController {
     ResponseEntity<?> delete(@PathVariable Long id) {
         repository.deleteById(id);
 
-        return ResponseEntity.accepted().build();
+        return ResponseEntity.ok().build();
     }
 
 }

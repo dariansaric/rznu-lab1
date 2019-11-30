@@ -42,7 +42,10 @@ public class PlayerController {
                         linkTo(methodOn(PlayerController.class).all()).withSelfRel()));
     }
 
-    @PostMapping(value = "/new", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/new"
+            , consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
     ResponseEntity<?> createPlayer(@RequestBody String newPlayer) throws URISyntaxException {
         Player p = GSON.fromJson(newPlayer, Player.class);
         Player pojoPlayer = repository.save(p); // newly created player as POJO
@@ -53,6 +56,7 @@ public class PlayerController {
                         new URI(linkTo(Player.class)
                                 .slash(pojoPlayer.getId())
                                 .withSelfRel().getHref()))
+                        .contentType(MediaType.APPLICATION_JSON)
                         .body(player)
                 : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
@@ -92,6 +96,6 @@ public class PlayerController {
     ResponseEntity<?> delete(@PathVariable Long id) {
         repository.deleteById(id);
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 }

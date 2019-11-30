@@ -12,7 +12,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.context.WebApplicationContext;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -23,8 +22,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 public class TeamControllerTest {
     private static final Gson GSON = new Gson();
-    @Autowired
-    WebApplicationContext context;
+    //    @Autowired
+//    WebApplicationContext context;
     @Autowired
     private MockMvc mvc;
     @Autowired
@@ -69,7 +68,7 @@ public class TeamControllerTest {
 
     @Test
     public void updateTeam() throws Exception {
-        Team t = repository.findAll().get(0);
+        Team t = repository.findAll().get(1);
         t.setSuperBowlsWon(10);
         Team t1 = new Team(t.getName(), t.getSuperBowlsWon(), t.getYearFound());
 
@@ -90,6 +89,6 @@ public class TeamControllerTest {
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
         )
-                .andExpect(status().isAccepted());
+                .andExpect(status().isOk());
     }
 }
