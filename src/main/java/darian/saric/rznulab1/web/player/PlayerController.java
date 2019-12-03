@@ -19,7 +19,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 @RestController
-@RequestMapping("/players")
+@RequestMapping("/api/players")
 public class PlayerController {
     private static final Gson GSON = new Gson();
     private final PlayerRepository repository;
@@ -42,7 +42,7 @@ public class PlayerController {
                         linkTo(methodOn(PlayerController.class).all()).withSelfRel()));
     }
 
-    @PutMapping(value = "/new"
+    @PutMapping(value = "/"
             , consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
@@ -72,6 +72,7 @@ public class PlayerController {
 
     @PostMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<?> updatePlayer(@RequestBody Player player, @PathVariable Long id) {
+//        Player player = GSON.fromJson(s, Player.class);
         PlayerResource playerResource = repository.findById(id)
                 .map(p -> {
                     p.setName(player.getName());

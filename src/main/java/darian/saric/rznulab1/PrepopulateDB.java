@@ -20,7 +20,8 @@ public class PrepopulateDB {
             new Team("Pittburgh Steelers", 7, 1933));
     private static final List<Player> players = Arrays.asList(
             new Player("Tom Brady", Position.QB, 42, "Michigan", teams.get(0)),
-            new Player("Patrick Mahomes", Position.QB, 23, "Texas", teams.get(1)));
+            new Player("Patrick Mahomes", Position.QB, 23, "Texas", teams.get(1)),
+            new Player("Julian Edelman", Position.WR, 30, "Ohio", teams.get(0)));
 
 
     @Bean

@@ -10,7 +10,7 @@ import javax.persistence.*;
 @Entity(name = "player")
 public class Player {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "p_id")
     private Long id;
     private String name;

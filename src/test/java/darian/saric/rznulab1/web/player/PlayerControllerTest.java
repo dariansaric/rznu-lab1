@@ -15,9 +15,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = RznuLab1Application.class)
@@ -31,16 +31,17 @@ public class PlayerControllerTest {
     @Autowired
     private TeamRepository teamRepository;
 
-    @Test
-    public void all() {
-    }
+//    @Test
+//    public void all() {
+//    }
 
     @Test
     public void createPlayer() throws Exception {
         Player p = new Player("Saquon Barkley", Position.RB, 21, "Ohio", teamRepository.findAll().get(0));
 
         mvc.perform(
-                put("/players/new")
+                put("/api/players/new")
+                        .with(user("admin"))
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(GSON.toJson(p)))
                 .andExpect(status().isCreated())
@@ -54,12 +55,14 @@ public class PlayerControllerTest {
         Player p = repository.findAll().get(0);
 
         mvc.perform(
-                get("/players/" + p.getId())
+                get("/api/players/" + p.getId())
                         .accept(MediaType.APPLICATION_JSON_VALUE)
+//                        .with(user("admin"))
         )
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(content().json(GSON.toJson(p)));
+//                .andExpect(content().json(GSON.toJson(p)));
+                .andExpect(jsonPath("$.name").value("Tom Brady"));
     }
 
     @Test
@@ -69,12 +72,15 @@ public class PlayerControllerTest {
         Player p1 = new Player(p.getName(), p.getPosition(), p.getAge(), p.getCollege(), p.getTeam());
 
         mvc.perform(
-                post("/player/" + p.getId())
-                        .content(MediaType.APPLICATION_JSON_VALUE)
+                post("/api/players/" + p.getId())
+                        .with(user("admin"))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .accept(MediaType.APPLICATION_JSON_VALUE)
                         .content(GSON.toJson(p)))
                 .andExpect(status().isAccepted())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(jsonPath("$.college").value("UniZg"))
+        ;
 
     }
 
@@ -82,7 +88,8 @@ public class PlayerControllerTest {
     public void deletePlayer() throws Exception {
         Long id = repository.findAll().get(0).getId();
         mvc.perform(
-                delete("/players/" + id)
+                delete("/api/players/" + id)
+                        .with(user("admin"))
                         .accept(MediaType.APPLICATION_JSON_VALUE)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
         )

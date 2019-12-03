@@ -1,6 +1,7 @@
 package darian.saric.rznulab1.web.team;
 
 import com.google.gson.Gson;
+import darian.saric.rznulab1.model.Player;
 import darian.saric.rznulab1.model.PlayerRepository;
 import darian.saric.rznulab1.model.Team;
 import darian.saric.rznulab1.model.TeamRepository;
@@ -22,7 +23,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 @RestController
-@RequestMapping("/teams")
+@RequestMapping("/api/teams")
 public class TeamController {
     private static final Gson GSON = new Gson();
     private final TeamRepository repository;
@@ -56,6 +57,25 @@ public class TeamController {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(new Resources<>(players,
                         linkTo(methodOn(TeamController.class).getPlayersForTeam(id)).withSelfRel()));
+    }
+
+    @GetMapping(value = "/{id}/players/{pid}", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> getPlayerFromTeam(@PathVariable Long id, @PathVariable Long pid) {
+        Optional<Team> ot = repository.findById(id);
+        if (ot.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Team t = ot.get();
+
+        List<Player> players = playerRepository.getAllByTeam(t);
+        Optional<Player> op = players.stream().filter(p -> p.getId().equals(pid)).findAny();
+
+        if (op.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(playerAssembler.toResource(op.get()));
     }
 
     @GetMapping
